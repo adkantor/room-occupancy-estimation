@@ -2,13 +2,14 @@
 BININTERDATADIR := data/interim/binary
 BINPROCDATADIR := data/processed/binary
 BININPUTS := $(BINPROCDATADIR)/X.pkl\
-			$(BINPROCDATADIR)/y.pkl\
-			$(BINPROCDATADIR)/X_train.pkl\
-			$(BINPROCDATADIR)/X_test.pkl\
-			$(BINPROCDATADIR)/y_train.pkl\
-			$(BINPROCDATADIR)/y_test.pkl
+			 $(BINPROCDATADIR)/y.pkl\
+			 $(BINPROCDATADIR)/X_train.pkl\
+			 $(BINPROCDATADIR)/X_test.pkl\
+			 $(BINPROCDATADIR)/y_train.pkl\
+			 $(BINPROCDATADIR)/y_test.pkl
 
-MODELS := models/svc/svc-binary.sav
+MODELS := models/binary/svc-binary.sav\
+		  models/binary/knn-binary.sav
 
 .PHONY : dataset dataframe features inputs models
 
@@ -36,5 +37,8 @@ $(BININTERDATADIR)/df.pkl : data/interim/raw_df.pkl src/features/build_features.
 $(BININPUTS) : $(BININTERDATADIR)/df.pkl src/features/build_final_datasets.py
 	python src/features/build_final_datasets.py -b
 
-models/svc/svc-binary.sav : $(BININPUTS) src/models/train_models.py
+models/binary/svc-binary.sav : $(BININPUTS) src/models/train_models.py
 	python src/models/train_models.py -X $(BINPROCDATADIR)/X.pkl -y $(BINPROCDATADIR)/y.pkl -b --svc
+
+models/binary/knn-binary.sav : $(BININPUTS) src/models/train_models.py
+	python src/models/train_models.py -X $(BINPROCDATADIR)/X.pkl -y $(BINPROCDATADIR)/y.pkl -b --knn
