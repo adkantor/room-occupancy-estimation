@@ -62,7 +62,8 @@ Therefore traditional time series analysis is problematic or, at least, needs ha
 
 As an experimentation process I plan to tackle the following prediction problems:
 
-1. Binary classification (occupied / not occupied); treat data points being independent
-1. Regression (estimate number of people in room); treat data points being independent
-1. Binary classification (occupied / not occupied); treat data points as time series
-1. Regression (estimate number of people in room); treat data points as time series
+1. Binary classification (occupied / not occupied)
+1. Regression (estimate number of people in room)
+
+For details please see README files in 'reports' folder.
+
