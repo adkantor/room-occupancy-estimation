@@ -1,18 +1,16 @@
-# PROJDIR := $(realpath $(CURDIR)/..)
-# DATADIR := $(PROJDIR)/data
-# RAWDATADIR := $(DATADIR)/raw
-# SRCDIR := $(PROJDIR)/src
 
-BIINTERDATADIR := data/interim/binary_independent
-BIPROCDATADIR := data/processed/binary_independent
-BIINPUTS := $(BIPROCDATADIR)/X.pkl\
-			$(BIPROCDATADIR)/y.pkl\
-			$(BIPROCDATADIR)/X_train.pkl\
-			$(BIPROCDATADIR)/X_test.pkl\
-			$(BIPROCDATADIR)/y_train.pkl\
-			$(BIPROCDATADIR)/y_test.pkl
+BININTERDATADIR := data/interim/binary
+BINPROCDATADIR := data/processed/binary
+BININPUTS := $(BINPROCDATADIR)/X.pkl\
+			$(BINPROCDATADIR)/y.pkl\
+			$(BINPROCDATADIR)/X_train.pkl\
+			$(BINPROCDATADIR)/X_test.pkl\
+			$(BINPROCDATADIR)/y_train.pkl\
+			$(BINPROCDATADIR)/y_test.pkl
 
-.PHONY : dataset dataframe features inputs
+MODELS := models/svc/svc-binary.sav
+
+.PHONY : dataset dataframe features inputs models
 
 all: inputs
 
@@ -20,9 +18,11 @@ dataset : data/raw/Occupancy_Estimation.csv
 
 dataframe : data/interim/raw_df.pkl
 
-features : $(BIINTERDATADIR)/df.pkl
+features : $(BININTERDATADIR)/df.pkl
 
-inputs: $(BIINPUTS)
+inputs: $(BININPUTS)
+
+models: $(MODELS)
 
 data/raw/Occupancy_Estimation.csv :
 	python src/data/download_dataset.py
@@ -30,8 +30,11 @@ data/raw/Occupancy_Estimation.csv :
 data/interim/raw_df.pkl : data/raw/Occupancy_Estimation.csv
 	python src/data/save_dataframe.py
 
-$(BIINTERDATADIR)/df.pkl : data/interim/raw_df.pkl src/features/build_features.py
-	python src/features/build_features.py -b -i
+$(BININTERDATADIR)/df.pkl : data/interim/raw_df.pkl src/features/build_features.py
+	python src/features/build_features.py -b
 
-$(BIINPUTS) : $(BIINTERDATADIR)/df.pkl src/features/build_final_datasets.py
-	python src/features/build_final_datasets.py -b -i
+$(BININPUTS) : $(BININTERDATADIR)/df.pkl src/features/build_final_datasets.py
+	python src/features/build_final_datasets.py -b
+
+models/svc/svc-binary.sav : $(BININPUTS) src/models/train_models.py
+	python src/models/train_models.py -X $(BINPROCDATADIR)/X.pkl -y $(BINPROCDATADIR)/y.pkl -b --svc
