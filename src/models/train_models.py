@@ -10,6 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 
 
 real_features = ['mintemp', 'maxtemp', 'minlight', 'maxlight', 'minsound', 'maxsound', 'co2', 'co2slope']
@@ -70,10 +71,10 @@ def train_knn_binary(X_path: str, y_path: str) -> None:
 
     # model hyperparameters
     params = {
-    'model__n_neighbors': 1,
-    'model__weights': 'distance',
-    'model__p': 1
-}
+        'model__n_neighbors': 1,
+        'model__weights': 'distance',
+        'model__p': 1
+    }
     # output path
     out_path = Path('models/binary/knn-binary.sav')
 
@@ -82,6 +83,48 @@ def train_knn_binary(X_path: str, y_path: str) -> None:
 
     # constuct pipeline
     model = KNeighborsClassifier()
+
+    numTransformer = Pipeline(steps=[
+        ('scaler', MinMaxScaler()),
+    ])
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('numeric', numTransformer, real_features),
+        ]
+    )
+
+    estimator = Pipeline(
+        steps=[
+            ('preprocessor', preprocessor),
+            ('model', model)
+        ]
+    )
+
+    # fit model
+    estimator.fit(X, y)
+
+    # save fitted model
+    joblib.dump(estimator, out_path)
+
+
+def train_cart_binary(X_path: str, y_path: str) -> None:
+
+    # model hyperparameters
+    params = {
+        'model__ccp_alpha': 0.0, 
+        'model__criterion': 'log_loss', 
+        'model__max_depth': 12, 
+        'model__min_samples_split': 4
+    }
+    # output path
+    out_path = Path('models/binary/cart-binary.sav')
+
+    # get datasets
+    X, y = get_data(X_path, y_path)
+
+    # constuct pipeline
+    model = DecisionTreeClassifier(random_state=42)
 
     numTransformer = Pipeline(steps=[
         ('scaler', MinMaxScaler()),
@@ -117,6 +160,7 @@ if __name__ == "__main__":
     mod = ap.add_mutually_exclusive_group(required=True)
     mod.add_argument("-s", "--svc", action='store_true', help="Support Vector Classifier")
     mod.add_argument("-k", "--knn", action='store_true', help="k-Nearest Neighbors classifier")
+    mod.add_argument("-c", "--cart", action='store_true', help="Decision Tree classifier")
 
     args = vars(ap.parse_args())
 
@@ -125,5 +169,7 @@ if __name__ == "__main__":
             train_svc_binary(args['X'],args['y'])
         elif args['knn']:
             train_knn_binary(args['X'],args['y'])
+        elif args['cart']:
+            train_cart_binary(args['X'],args['y'])
     elif args['regression']:
         print('regression task not implemented')
