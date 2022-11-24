@@ -8,16 +8,16 @@ from sklearn.model_selection import train_test_split
 
 in_path = Path('data/interim/raw_df.pkl').resolve()
 
-def build_binary_independent():
+def build_binary():
     """Build dataframe for binary classification with independent data points."""
     
-    in_path = Path('data/interim/binary_independent/df.pkl').resolve()
-    X_path = Path('data/processed/binary_independent/X.pkl')
-    X_train_path = Path('data/processed/binary_independent/X_train.pkl')
-    X_test_path = Path('data/processed/binary_independent/X_test.pkl')
-    y_path = Path('data/processed/binary_independent/y.pkl')
-    y_train_path = Path('data/processed/binary_independent/y_train.pkl')
-    y_test_path = Path('data/processed/binary_independent/y_test.pkl')
+    in_path = Path('data/interim/binary/df.pkl').resolve()
+    X_path = Path('data/processed/binary/X.pkl')
+    X_train_path = Path('data/processed/binary/X_train.pkl')
+    X_test_path = Path('data/processed/binary/X_test.pkl')
+    y_path = Path('data/processed/binary/y.pkl')
+    y_train_path = Path('data/processed/binary/y_train.pkl')
+    y_test_path = Path('data/processed/binary/y_test.pkl')
 
     df = pd.read_pickle(in_path)
 
@@ -38,13 +38,10 @@ if __name__ == "__main__":
     task = ap.add_mutually_exclusive_group(required=True)
     task.add_argument("-b", "--binary", action='store_true', help="binary classification task")
     task.add_argument("-r", "--regression", action='store_true', help="regression task")
-    approach = ap.add_mutually_exclusive_group(required=True)
-    approach.add_argument("-i", "--independent", action='store_true', help="independent samples")
-    approach.add_argument("-t", "--timeseries", action='store_true', help="time series")
 
     args = vars(ap.parse_args())
 
-    if args['binary'] and args['independent']:
-        build_binary_independent()
+    if args['binary']:
+        build_binary()
     else:
-        print('not implemented')
+        print('task not implemented')

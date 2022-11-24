@@ -7,10 +7,10 @@ import pandas as pd
 
 in_path = Path('data/interim/raw_df.pkl').resolve()
 
-def build_binary_independent():
+def build_binary():
     """Build dataframe for binary classification with independent data points."""
     
-    out_path = Path('data/interim/binary_independent/df.pkl')
+    out_path = Path('data/interim/binary/df.pkl')
 
     df_raw = pd.read_pickle(in_path)
 
@@ -37,13 +37,10 @@ if __name__ == "__main__":
     task = ap.add_mutually_exclusive_group(required=True)
     task.add_argument("-b", "--binary", action='store_true', help="binary classification task")
     task.add_argument("-r", "--regression", action='store_true', help="regression task")
-    approach = ap.add_mutually_exclusive_group(required=True)
-    approach.add_argument("-i", "--independent", action='store_true', help="independent samples")
-    approach.add_argument("-t", "--timeseries", action='store_true', help="time series")
 
     args = vars(ap.parse_args())
 
-    if args['binary'] and args['independent']:
-        build_binary_independent()
+    if args['binary']:
+        build_binary()
     else:
-        print('not implemented')
+        print('task not implemented')
