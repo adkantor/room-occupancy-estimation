@@ -135,3 +135,4 @@ data/raw/*.csv
 # pickled datasets
 data/*/*.pkl
 data/*/*/*.pkl
+models/*/*.sav
