@@ -10,7 +10,8 @@ BININPUTS := $(BINPROCDATADIR)/X.pkl\
 
 MODELS := models/binary/svc-binary.sav\
 		  models/binary/knn-binary.sav\
-		  models/binary/cart-binary.sav
+		  models/binary/cart-binary.sav\
+		  models/binary/rf-binary.sav
 
 .PHONY : dataset dataframe features inputs models
 
@@ -46,3 +47,6 @@ models/binary/knn-binary.sav : $(BININPUTS) src/models/train_models.py
 
 models/binary/cart-binary.sav : $(BININPUTS) src/models/train_models.py
 	python src/models/train_models.py -X $(BINPROCDATADIR)/X.pkl -y $(BINPROCDATADIR)/y.pkl -b --cart
+
+models/binary/rf-binary.sav : $(BININPUTS) src/models/train_models.py
+	python src/models/train_models.py -X $(BINPROCDATADIR)/X.pkl -y $(BINPROCDATADIR)/y.pkl -b --rf
