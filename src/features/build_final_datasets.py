@@ -33,6 +33,33 @@ def build_binary():
     y_train.to_pickle(y_train_path)
     y_test.to_pickle(y_test_path)
 
+
+def build_regression():
+    """Build dataframe for regression with independent data points."""
+    
+    in_path = Path('data/interim/regression/df.pkl').resolve()
+    X_path = Path('data/processed/regression/X.pkl')
+    X_train_path = Path('data/processed/regression/X_train.pkl')
+    X_test_path = Path('data/processed/regression/X_test.pkl')
+    y_path = Path('data/processed/regression/y.pkl')
+    y_train_path = Path('data/processed/regression/y_train.pkl')
+    y_test_path = Path('data/processed/regression/y_test.pkl')
+
+    df = pd.read_pickle(in_path)
+
+    # split features and target
+    X, y = df.iloc[:, :-1], df.iloc[:, -1]
+    X.to_pickle(X_path)
+    y.to_pickle(y_path)
+
+    # train-test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+    X_train.to_pickle(X_train_path)
+    X_test.to_pickle(X_test_path)
+    y_train.to_pickle(y_train_path)
+    y_test.to_pickle(y_test_path)
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     task = ap.add_mutually_exclusive_group(required=True)
@@ -43,5 +70,7 @@ if __name__ == "__main__":
 
     if args['binary']:
         build_binary()
+    elif args['regression']:
+        build_regression()
     else:
         print('task not implemented')

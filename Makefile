@@ -31,9 +31,9 @@ dataset : data/raw/Occupancy_Estimation.csv
 
 dataframe : data/interim/raw_df.pkl
 
-features : $(BININTERDATADIR)/df.pkl
+features : $(BININTERDATADIR)/df.pkl $(REGINTERDATADIR)/df.pkl
 
-inputs: $(BININPUTS)
+inputs: $(BININPUTS) $(REGINPUTS)
 
 models: $(MODELS)
 
@@ -46,8 +46,14 @@ data/interim/raw_df.pkl : data/raw/Occupancy_Estimation.csv
 $(BININTERDATADIR)/df.pkl : data/interim/raw_df.pkl src/features/build_features.py
 	python src/features/build_features.py -b
 
+$(REGINTERDATADIR)/df.pkl : data/interim/raw_df.pkl src/features/build_features.py
+	python src/features/build_features.py -r
+
 $(BININPUTS) : $(BININTERDATADIR)/df.pkl src/features/build_final_datasets.py
 	python src/features/build_final_datasets.py -b
+
+$(REGINPUTS) : $(REGINTERDATADIR)/df.pkl src/features/build_final_datasets.py
+	python src/features/build_final_datasets.py -r
 
 models/binary/svc-binary.sav : $(BININPUTS) src/models/train_models.py
 	python src/models/train_models.py -X $(BINPROCDATADIR)/X.pkl -y $(BINPROCDATADIR)/y.pkl -b --svc

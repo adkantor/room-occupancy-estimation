@@ -32,6 +32,29 @@ def build_binary():
 
     df.to_pickle(out_path)
 
+
+def build_regression():
+    """Build dataframe for regression with independent data points."""
+    
+    out_path = Path('data/interim/regression/df.pkl')
+
+    df_raw = pd.read_pickle(in_path)
+
+    # create envelopes for temp, light, sound and pir
+    df = df_raw.copy().drop(columns=['Room_Occupancy_Count'])
+    df['mintemp'] = df_raw[['S1_Temp', 'S2_Temp', 'S3_Temp', 'S4_Temp']].min(axis=1)
+    df['maxtemp'] = df_raw[['S1_Temp', 'S2_Temp', 'S3_Temp', 'S4_Temp']].max(axis=1)
+    df['minlight'] = df_raw[['S1_Light', 'S2_Light', 'S3_Light', 'S4_Light']].min(axis=1)
+    df['maxlight'] = df_raw[['S1_Light', 'S2_Light', 'S3_Light', 'S4_Light']].max(axis=1)
+    df['minsound'] = df_raw[['S1_Sound', 'S2_Sound', 'S3_Sound', 'S4_Sound']].min(axis=1)
+    df['maxsound'] = df_raw[['S1_Sound', 'S2_Sound', 'S3_Sound', 'S4_Sound']].max(axis=1)
+    df['minpir'] = df_raw[['S6_PIR', 'S7_PIR']].min(axis=1)
+    df['maxpir'] = df_raw[['S6_PIR', 'S7_PIR']].max(axis=1)
+    df['target'] = df_raw['Room_Occupancy_Count']
+
+    df.to_pickle(out_path)
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     task = ap.add_mutually_exclusive_group(required=True)
@@ -42,5 +65,7 @@ if __name__ == "__main__":
 
     if args['binary']:
         build_binary()
+    elif args['regression']:
+        build_regression()
     else:
-        print('task not implemented')
+        print('Task not implemented')
