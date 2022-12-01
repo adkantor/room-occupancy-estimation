@@ -8,14 +8,14 @@ BININPUTS := $(BINPROCDATADIR)/X.pkl\
 			 $(BINPROCDATADIR)/y_train.pkl\
 			 $(BINPROCDATADIR)/y_test.pkl
 
-REGINTERDATADIR := data/interim/regression
-REGPROCDATADIR := data/processed/regression
-REGINPUTS := $(REGPROCDATADIR)/X.pkl\
-			 $(REGPROCDATADIR)/y.pkl\
-			 $(REGPROCDATADIR)/X_train.pkl\
-			 $(REGPROCDATADIR)/X_test.pkl\
-			 $(REGPROCDATADIR)/y_train.pkl\
-			 $(REGPROCDATADIR)/y_test.pkl
+MCINTERDATADIR := data/interim/multiclass
+MCPROCDATADIR := data/processed/multiclass
+MCINPUTS := $(MCPROCDATADIR)/X.pkl\
+			$(MCPROCDATADIR)/y.pkl\
+			$(MCPROCDATADIR)/X_train.pkl\
+			$(MCPROCDATADIR)/X_test.pkl\
+			$(MCPROCDATADIR)/y_train.pkl\
+			$(MCPROCDATADIR)/y_test.pkl
 
 MODELS := models/binary/svc-binary.sav\
 		  models/binary/knn-binary.sav\
@@ -31,9 +31,9 @@ dataset : data/raw/Occupancy_Estimation.csv
 
 dataframe : data/interim/raw_df.pkl
 
-features : $(BININTERDATADIR)/df.pkl
+features : $(BININTERDATADIR)/df.pkl $(MCINTERDATADIR)/df.pkl
 
-inputs: $(BININPUTS)
+inputs: $(BININPUTS) $(MCINPUTS)
 
 models: $(MODELS)
 
@@ -46,8 +46,14 @@ data/interim/raw_df.pkl : data/raw/Occupancy_Estimation.csv
 $(BININTERDATADIR)/df.pkl : data/interim/raw_df.pkl src/features/build_features.py
 	python src/features/build_features.py -b
 
+$(MCINTERDATADIR)/df.pkl : data/interim/raw_df.pkl src/features/build_features.py
+	python src/features/build_features.py -m
+
 $(BININPUTS) : $(BININTERDATADIR)/df.pkl src/features/build_final_datasets.py
 	python src/features/build_final_datasets.py -b
+
+$(MCINPUTS) : $(MCINTERDATADIR)/df.pkl src/features/build_final_datasets.py
+	python src/features/build_final_datasets.py -m
 
 models/binary/svc-binary.sav : $(BININPUTS) src/models/train_models.py
 	python src/models/train_models.py -X $(BINPROCDATADIR)/X.pkl -y $(BINPROCDATADIR)/y.pkl -b --svc
