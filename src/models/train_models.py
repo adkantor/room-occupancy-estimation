@@ -12,6 +12,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
 
 
 real_features = ['mintemp', 'maxtemp', 'minlight', 'maxlight', 'minsound', 'maxsound', 'co2', 'co2slope']
@@ -194,6 +195,46 @@ def train_rf_binary(X_path: str, y_path: str) -> None:
     joblib.dump(estimator, out_path)
 
 
+def train_adaboost_binary(X_path: str, y_path: str) -> None:
+
+    # model hyperparameters
+    params = {
+        'model__learning_rate': 1.486,
+        'model__n_estimators': 500
+    }
+    # output path
+    out_path = Path('models/binary/adaboost-binary.sav')
+
+    # get datasets
+    X, y = get_data(X_path, y_path)
+
+    # constuct pipeline
+    model = AdaBoostClassifier(random_state=42)
+
+    numTransformer = Pipeline(steps=[
+        ('scaler', MinMaxScaler()),
+    ])
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('numeric', numTransformer, real_features),
+        ]
+    )
+
+    estimator = Pipeline(
+        steps=[
+            ('preprocessor', preprocessor),
+            ('model', model)
+        ]
+    )
+
+    # fit model
+    estimator.fit(X, y)
+
+    # save fitted model
+    joblib.dump(estimator, out_path)
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("-X", "--X", required=True, help="path to pickled features dataframe")
@@ -206,6 +247,7 @@ if __name__ == "__main__":
     mod.add_argument("-k", "--knn", action='store_true', help="k-Nearest Neighbors classifier")
     mod.add_argument("-c", "--cart", action='store_true', help="Decision Tree classifier")
     mod.add_argument("-f", "--rf", action='store_true', help="Random Forest classifier")
+    mod.add_argument("-a", "--adaboost", action='store_true', help="AdaBoost classifier")
 
     args = vars(ap.parse_args())
 
@@ -218,5 +260,9 @@ if __name__ == "__main__":
             train_cart_binary(args['X'],args['y'])
         elif args['rf']:
             train_rf_binary(args['X'],args['y'])
+        elif args['adaboost']:
+            train_adaboost_binary(args['X'],args['y'])
     elif args['regression']:
         print('regression task not implemented')
+    else:
+        print('task not implemented')

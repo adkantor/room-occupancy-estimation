@@ -8,10 +8,20 @@ BININPUTS := $(BINPROCDATADIR)/X.pkl\
 			 $(BINPROCDATADIR)/y_train.pkl\
 			 $(BINPROCDATADIR)/y_test.pkl
 
+REGINTERDATADIR := data/interim/regression
+REGPROCDATADIR := data/processed/regression
+REGINPUTS := $(REGPROCDATADIR)/X.pkl\
+			 $(REGPROCDATADIR)/y.pkl\
+			 $(REGPROCDATADIR)/X_train.pkl\
+			 $(REGPROCDATADIR)/X_test.pkl\
+			 $(REGPROCDATADIR)/y_train.pkl\
+			 $(REGPROCDATADIR)/y_test.pkl
+
 MODELS := models/binary/svc-binary.sav\
 		  models/binary/knn-binary.sav\
 		  models/binary/cart-binary.sav\
-		  models/binary/rf-binary.sav
+		  models/binary/rf-binary.sav\
+		  models/binary/adaboost-binary.sav
 
 .PHONY : dataset dataframe features inputs models
 
@@ -50,3 +60,6 @@ models/binary/cart-binary.sav : $(BININPUTS) src/models/train_models.py
 
 models/binary/rf-binary.sav : $(BININPUTS) src/models/train_models.py
 	python src/models/train_models.py -X $(BINPROCDATADIR)/X.pkl -y $(BINPROCDATADIR)/y.pkl -b --rf
+
+models/binary/adaboost-binary.sav : $(BININPUTS) src/models/train_models.py
+	python src/models/train_models.py -X $(BINPROCDATADIR)/X.pkl -y $(BINPROCDATADIR)/y.pkl -b --adaboost
