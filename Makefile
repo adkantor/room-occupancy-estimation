@@ -21,7 +21,12 @@ MODELS := models/binary/svc-binary.sav\
 		  models/binary/knn-binary.sav\
 		  models/binary/cart-binary.sav\
 		  models/binary/rf-binary.sav\
-		  models/binary/adaboost-binary.sav
+		  models/binary/adaboost-binary.sav\
+		  models/multiclass/svc-multiclass.sav\
+		  models/multiclass/knn-multiclass.sav\
+		  models/multiclass/cart-multiclass.sav\
+		  models/multiclass/rf-multiclass.sav\
+		  models/multiclass/gradientboost-multiclass.sav
 
 .PHONY : dataset dataframe features inputs models
 
@@ -69,3 +74,18 @@ models/binary/rf-binary.sav : $(BININPUTS) src/models/train_models.py
 
 models/binary/adaboost-binary.sav : $(BININPUTS) src/models/train_models.py
 	python src/models/train_models.py -X $(BINPROCDATADIR)/X.pkl -y $(BINPROCDATADIR)/y.pkl -b --adaboost
+
+models/multiclass/svc-multiclass.sav : $(MCINPUTS) src/models/train_models.py
+	python src/models/train_models.py -X $(MCPROCDATADIR)/X.pkl -y $(MCPROCDATADIR)/y.pkl -m --svc
+
+models/multiclass/knn-multiclass.sav : $(MCINPUTS) src/models/train_models.py
+	python src/models/train_models.py -X $(MCPROCDATADIR)/X.pkl -y $(MCPROCDATADIR)/y.pkl -m --knn
+
+models/multiclass/cart-multiclass.sav : $(MCINPUTS) src/models/train_models.py
+	python src/models/train_models.py -X $(MCPROCDATADIR)/X.pkl -y $(MCPROCDATADIR)/y.pkl -m --cart
+
+models/multiclass/rf-multiclass.sav : $(MCINPUTS) src/models/train_models.py
+	python src/models/train_models.py -X $(MCPROCDATADIR)/X.pkl -y $(MCPROCDATADIR)/y.pkl -m --rf
+
+models/multiclass/gradientboost-multiclass.sav : $(MCINPUTS) src/models/train_models.py
+	python src/models/train_models.py -X $(MCPROCDATADIR)/X.pkl -y $(MCPROCDATADIR)/y.pkl -m --gradientboost
