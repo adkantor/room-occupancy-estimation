@@ -67,5 +67,4 @@ if __name__ == "__main__":
         build_binary()
     elif args['multiclass']:
         build_multiclass()
-    else:
         print('Task not implemented')
